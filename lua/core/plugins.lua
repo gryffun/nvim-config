@@ -313,6 +313,9 @@ require("lazy").setup({
                     -- fuck u omnisharp guys adding an uppercase S thats like
                     -- 2 hours i wont get back
                     cmd = { vim.fn.stdpath("data") .. "/mason/bin/OmniSharp" },
+                    RoslynExtensionOptions = {
+                        EnableAnalyzerSupport = false,
+                    },
                 },
             }
 
@@ -579,6 +582,13 @@ require("lazy").setup({
 
     }
 })
+
+-- Lsp additional set up
+
+vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
+    if not result or result.activeSignature == -1 then return end
+    vim.lsp.handlers.signature_help(err, result, ctx, config)
+end
 
 
 -- non-lsp plugin additional set up

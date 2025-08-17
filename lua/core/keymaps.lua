@@ -42,7 +42,7 @@ keymap('v', '<', function() wrap({ '<', '>' }) end)
 
 
 -- Replace symbol in file
-keymap('n', '<Leader>r', function()
+keymap('n', '<Leader>s', function()
     local word = vim.fn.expand('<cword>')
     local repl = vim.fn.input('Replace "' .. word .. '" with: ')
     word = vim.fn.escape(word, '\\/')
