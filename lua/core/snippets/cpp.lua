@@ -203,7 +203,7 @@ return {
         }
     ]], {
         i(1, "// Add OpenGL cleanup code")
-    }))
+    })),
 
     -- Divider that I like using
     s("/*-------*/", {

@@ -3,7 +3,8 @@ local parser_path = vim.fn.stdpath("data") ..
     "/site/parser"                                               --.dlls need installed separatedly it pouints to site/parser but they point to programs/neovim/lib
 vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/lazy/lazy.nvim") -- Fixed path resolution
 
-local colour_theme = "tokyonight" -- change to tokyonights or whatever if u want. I like to mix it up every now n then
+local colour_theme =
+"kanagawa-paper-ink" -- change to tokyonights or whatever if u want. I like to mix it up every now n then
 
 require("lazy").setup({
     defaults = {
@@ -18,13 +19,13 @@ require("lazy").setup({
     -- view assembly Code compiled from c langs
     { 'krady21/compiler-explorer.nvim' },
     -- Display reference and definition info above funcs
-    {'VidocqH/lsp-lens.nvim'},
+    { 'VidocqH/lsp-lens.nvim' },
 
-----------------------------------------------------------------------
+    ----------------------------------------------------------------------
     -- Mini nvim Stuff
-    { 'echasnovski/mini.nvim', version = false },
+    { 'echasnovski/mini.nvim',         version = false },
 
-----------------------------------------------------------------------
+    ----------------------------------------------------------------------
     -- Text wrapping for signs like "" or ()
     {
         "doums/tenaille.nvim",
@@ -45,21 +46,30 @@ require("lazy").setup({
         },
     },
 
--------------------------------------------------------------------------
+    -------------------------------------------------------------------------
     -- Colour schemes
     {
         "folke/tokyonight.nvim",
-        lazy = false,
         priority = 10,
         opts = {},
     },
 
+    -- vim.cmd.colorscheme("kanagawa-paper")
+    -- vim.cmd.colorscheme("kanagawa-paper-ink")
+    -- vim.cmd.colorscheme("kanagawa-paper-canvas")
     {
-        "sainnhe/everforest",
-        lazy = false,
+        "thesimonho/kanagawa-paper.nvim",
         priority = 1000,
+        opts = { ... },
     },
--------------------------------------------------------------------------
+
+    { "rebelot/kanagawa.nvim" },
+
+    {
+        "cocopon/iceberg.vim",
+        priority = 1001,
+    },
+    -------------------------------------------------------------------------
 
     -- Indent lines and current scope highlighting
     {
@@ -70,24 +80,24 @@ require("lazy").setup({
         opts = {},
     },
 
--------------------------------------------------------------------------
+    -------------------------------------------------------------------------
     -- startup screen
     {
-    "goolord/alpha-nvim",
-    -- dependencies = { 'echasnovski/mini.icons' },
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    config = function()
-      local startify = require("alpha.themes.startify")
-      -- available: devicons, mini, default is mini
-      -- if provider not loaded and enabled is true, it will try to use another provider
-      startify.file_icons.provider = "devicons"
-      require("alpha").setup(
-        startify.config
-      )
-    end,
-  },
+        "goolord/alpha-nvim",
+        -- dependencies = { 'echasnovski/mini.icons' },
+        dependencies = { 'nvim-tree/nvim-web-devicons' },
+        config = function()
+            local startify = require("alpha.themes.startify")
+            -- available: devicons, mini, default is mini
+            -- if provider not loaded and enabled is true, it will try to use another provider
+            startify.file_icons.provider = "devicons"
+            require("alpha").setup(
+                startify.config
+            )
+        end,
+    },
 
--------------------------------------------------------------------------
+    -------------------------------------------------------------------------
     -- Treesitter
     {
         "nvim-treesitter/nvim-treesitter",
@@ -114,7 +124,7 @@ require("lazy").setup({
         end,
     },
 
--------------------------------------------------------------------------
+    -------------------------------------------------------------------------
     -- File locator stuff
 
     -- Harpoon: important locations
@@ -126,6 +136,14 @@ require("lazy").setup({
             local harpoon = require("harpoon")
             harpoon:setup()
         end
+    },
+
+    {
+        "leath-dub/snipe.nvim",
+        keys = {
+            { "gb", function() require("snipe").open_buffer_menu() end, desc = "Open Snipe buffer menu" }
+        },
+        opts = {}
     },
 
     -- Fuzzy Finder
@@ -219,13 +237,13 @@ require("lazy").setup({
         end
     },
 
--------------------------------------------------------------------------
+    -------------------------------------------------------------------------
     -- Nvim command line helper
     {
         "nvim-lualine/lualine.nvim",
         config = function()
             require("lualine").setup({
-                options = { theme = colour_theme } 
+                options = { theme = colour_theme }
             })
         end,
     },
@@ -305,7 +323,7 @@ require("lazy").setup({
                         end)
                     end, { "i" }),
 
-                    ["<C-Space>"] = cmp.mapping.complete(),                 -- trigger completion
+                    ["<C-Space>"] = cmp.mapping.complete(),                  -- trigger completion
                     ["<CR>"]      = cmp.mapping.confirm({ select = false }), -- confirm selection
                     ["<Tab>"]     = cmp.mapping(function(fallback)
                         if cmp.visible() then
@@ -375,9 +393,6 @@ require("lazy").setup({
         end,
     },
 
-
-
-
     -- Better formatting for different languages
     -- Use the vim cmd ":Mason" and press 5 in its menu and download these formatters if you want to use them
     {
@@ -427,7 +442,7 @@ require("lazy").setup({
         end,
     },
 
--------------------------------------------------------------------------
+    -------------------------------------------------------------------------
 
     -- Display current function information under cursor
     {
@@ -453,7 +468,7 @@ require("lazy").setup({
     },
 
 
--------------------------------------------------------------------------
+    -------------------------------------------------------------------------
 
     -- Scrollbar with debug colouration
     {
@@ -513,15 +528,14 @@ vim.cmd("colorscheme " .. colour_theme)
 require("ibl").setup()
 
 vim.diagnostic.config({
-  -- show virtual text (inline) for errors and warnings
-  virtual_text = {
-    spacing = 4,           -- how many spaces to leave between code and text
-    prefix = "●",          -- symbol to use before the message
-    source = "if_many",
-    severity = { min = vim.diagnostic.severity.WARN },
-    -- you can lower min to INFO/DEBUG if you want more messages
-  },
-  signs = true,
-  underline = true,
+    -- show virtual text (inline) for errors and warnings
+    virtual_text = {
+        spacing = 4, -- how many spaces to leave between code and text
+        prefix = "●", -- symbol to use before the message
+        source = "if_many",
+        severity = { min = vim.diagnostic.severity.WARN },
+        -- you can lower min to INFO/DEBUG if you want more messages
+    },
+    signs = true,
+    underline = true,
 })
-
