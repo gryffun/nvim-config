@@ -19,7 +19,7 @@ require("lazy").setup({
     -- view assembly Code compiled from c langs
     { 'krady21/compiler-explorer.nvim' },
     -- Display reference and definition info above funcs
-    { 'VidocqH/lsp-lens.nvim' },
+    -- { 'VidocqH/sp-lens.nvim' },
 
     ----------------------------------------------------------------------
     -- Mini nvim Stuff
@@ -263,15 +263,74 @@ require("lazy").setup({
     {
         "williamboman/mason-lspconfig.nvim",
         config = function()
-            require("mason-lspconfig").setup({
-                ensure_installed = {
-                    "lua_ls", "pyright", "omnisharp", "html", "cssls"
-                },
-                automatic_installation = true,
+            require("mason").setup()
+            local mason_lsp = require("mason-lspconfig")
+            local lspconfig = require("lspconfig")
+
+            mason_lsp.setup({
+                ensure_installed = { "lua_ls" },
+                automatic_enable = true,
             })
+
+            local capabilities = require("cmp_nvim_lsp").default_capabilities(
+                vim.lsp.protocol.make_client_capabilities()
+            )
+
+            local function on_attach_func(client, bufnr)
+                local function keymap(mode, lhs, rhs, desc)
+                    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
+                end
+                keymap("n", "gd", vim.lsp.buf.definition, "LSP: goto definition")
+                keymap("n", "gD", vim.lsp.buf.declaration, "LSP: goto declaration")
+                keymap("n", "gr", vim.lsp.buf.references, "LSP: references")
+                keymap("n", "K", vim.lsp.buf.hover, "LSP: hover")
+                keymap("n", "<leader>r", vim.lsp.buf.rename, "LSP: rename")
+
+                if client and client.server_capabilities then
+                    client.server_capabilities.documentFormattingProvider = false
+                    client.server_capabilities.documentFormattingRangeProvider = false
+                end
+            end
+
+            vim.diagnostic.config({
+                virtual_text = { prefix = "●" },
+                float = { border = "rounded" },
+                update_in_insert = true,
+            })
+
+            -- define per-server options here
+            local servers = {
+                lua_ls = {
+                    settings = {
+                        Lua = {
+                            runtime = { version = "LuaJIT" },
+                            diagnostics = { globals = { "vim", "love" } },
+                        },
+                    },
+                },
+                omnisharp = {
+                    -- needed this for the most recent OmniSharp version.
+                    -- fuck u omnisharp guys adding an uppercase S thats like
+                    -- 2 hours i wont get back
+                    cmd = { vim.fn.stdpath("data") .. "/mason/bin/OmniSharp" },
+                },
+            }
+
+            for name, server_opts in pairs(servers) do
+                local opts = vim.tbl_deep_extend("force", {
+                    capabilities = capabilities,
+                    on_attach = on_attach_func,
+                    flags = { debounce_text_changes = 150 },
+                }, server_opts or {})
+
+                if lspconfig[name] then
+                    lspconfig[name].setup(opts)
+                else
+                    vim.notify(("lspconfig: server config not found for %s"):format(name), vim.log.levels.ERROR)
+                end
+            end
         end,
     },
-
 
     -- CMP for autocomplete + sources + LuaSnip integration
     {
@@ -471,26 +530,26 @@ require("lazy").setup({
     -------------------------------------------------------------------------
 
     -- Scrollbar with debug colouration
-    {
-        "petertriho/nvim-scrollbar",
-        config = function()
-            local colors = require("tokyonight.colors").setup()
-            require("scrollbar").setup({
-                handle = {
-                    color = colors.bg_highlight,
-                },
-                marks = {
-                    Search = { color = colors.orange },
-                    Error = { color = colors.error },
-                    Warn = { color = colors.warning },
-                    Info = { color = colors.info },
-                    Hint = { color = colors.hint },
-                    Misc = { color = colors.purple },
-                }
-            })
-        end,
-        -- dependencies = { "folke/tokyonight.nvim" }  -- not necessarily needed if not using colors from tokyonight or have it set up elsewhere
-    },
+    --    {
+    --        "petertriho/nvim-scrollbar",
+    --        config = function()
+    --            local colors = require("tokyonight.colors").setup()
+    --            require("scrollbar").setup({
+    --                handle = {
+    --                    color = colors.bg_highlight,
+    --                },
+    --                marks = {
+    --                    Search = { color = colors.orange },
+    --                    Error = { color = colors.error },
+    --                    Warn = { color = colors.warning },
+    --                    Info = { color = colors.info },
+    --                    Hint = { color = colors.hint },
+    --                    Misc = { color = colors.purple },
+    --                }
+    --            })
+    --        end,
+    --        -- dependencies = { "folke/tokyonight.nvim" }  -- not necessarily needed if not using colors from tokyonight or have it set up elsewhere
+    --    },
 
     {
         "folke/lazydev.nvim",
